@@ -4,6 +4,6 @@ class Step < ActiveRecord::Base
 
   validates :time_length, presence: true
   validates :time_measure, presence: true
-  validates :description, presence: true
+  validates :step_name, presence: true
 
 end

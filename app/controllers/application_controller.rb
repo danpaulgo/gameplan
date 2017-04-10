@@ -12,4 +12,12 @@ class ApplicationController < Sinatra::Base
     erb :home
   end
 
+  get "/login" do
+
+  end
+
+  get "/logout" do
+
+  end
+
 end
