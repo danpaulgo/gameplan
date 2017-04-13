@@ -41,25 +41,28 @@ class UsersController < ApplicationController
     else
       redirect "/login"
     end
-    @users = User.all
   end
 
   # validate logged in
-  get "/users/:username" do
+  get "/users/search" do
     if UserHelper.logged_in?(session)
-      @user = User.find_by(username: params[:username])
-      erb :'/users/show'
+      @users = []
+      @search_term = params[:s]
+      @users += User.all.select{|u| u.username.downcase.include?(@search_term.downcase)}
+      @users += User.all.select{|u| "#{u.first_name} #{u.last_name}".downcase.include?(@search_term.downcase)}
+      @users = @users.uniq
+      erb :'/users/index'
     else
       redirect "/login"
     end
   end
 
   # validate logged in
-  get "/users/search" do
+  get "/users/:username" do
     if UserHelper.logged_in?(session)
-      @search_term = params[:s].downcase
-      @users = User.all.detect{|u| u.username.downcase.include?(@search_term)}
-      erb :'/users/index'
+      @user = User.find_by(username: params[:username])
+      @current_user = UserHelper.current_user(session)
+      erb :'/users/show'
     else
       redirect "/login"
     end

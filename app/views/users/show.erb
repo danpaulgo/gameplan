@@ -1,0 +1,18 @@
+<h2><%= @user == @current_user ? "My" : "#{@user.username}'s" %> Profile</h2>
+<h4>Name: <%= "#{@user.first_name} #{@user.last_name}" %></h4>
+<h4>Age: <%= ((Date.today-@user.birthday)/365).to_i %></h4>
+<h3>Gameplans</h3>
+<ol>
+<% @user.gameplans.each do |gameplan| %>
+  <li><a href="/gameplans/<%= gameplan.id %>"><%= gameplan.title %></a></li>
+<% end %>
+</ol>
+<h3>Starred Gameplans</h3>
+<ol>
+<% @user.starred_gameplans.uniq.each do |gameplan| %>
+  <li><a href="/gameplans/<%= gameplan.id %>"><%= gameplan.title %></a></li>
+<% end %>
+</ol>
+<br>
+<p style="font-size: 14"></p>
+<p style="font-size: 14"><i><a href="/users">Browse Users</a> | <a href="">Browse Gameplans</a> | <a href="/">Return Home</a></i></p>

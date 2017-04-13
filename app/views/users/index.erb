@@ -1,0 +1,16 @@
+<h2>
+  <% if !!@search_term %>
+    Search Results for "<%= @search_term %>"
+  <% else %>
+    All Users
+  <% end %>
+</h2>
+<ol>
+<% @users.each do |user| %>
+  <li><a href="/users/<%= user.username %>"><%= user.username %></a></li>
+<% end %>
+</ol>
+<form action="/users/search" method="get">
+  <input type="text" id="search_term" name="s" placeholder="Search Users">
+  <input type="submit" value="Search">
+</form>
