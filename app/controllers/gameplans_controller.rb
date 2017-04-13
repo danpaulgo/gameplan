@@ -1,4 +1,4 @@
-class UsersController < ApplicationController
+class GameplansController < ApplicationController
 
   # CREATE
 
