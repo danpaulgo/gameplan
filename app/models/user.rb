@@ -9,11 +9,11 @@ class User < ActiveRecord::Base
 
   validates :first_name, presence: true
   validates :last_name, presence: true
+  validates :birthday, presence: true
   validates :username, presence: true
   validates_uniqueness_of :username, case_sensitive: false
   validates :username, format: { without: /\s/ }
   validates :password, presence: true
   validates :password, format: { without: /\s/ }
-
 
 end
