@@ -16,4 +16,8 @@ class User < ActiveRecord::Base
   validates :password, presence: true
   validates :password, format: { without: /\s/ }
 
+  def full_name
+    "#{self.first_name} #{self.last_name}"
+  end
+
 end

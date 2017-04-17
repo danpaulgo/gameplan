@@ -1,0 +1,8 @@
+<h3 style="margin-bottom: 8px">Edit Name</h3>
+<form action="/users/edit" method="post">
+  <input type="hidden" id="hidden" name="_method" value="patch">
+  <input type="text" id="user_first_name" name="user[first_name]" value="<%= @current_user.first_name %>" placeholder="First Name">
+  <input type="text" id="user_flast_name" name="user[last_name]" value="<%= @current_user.last_name %>" placeholder="Last Name">
+  <br>
+  <input style="margin-top: 8px" type="submit" value="Update Name">
+</form>

@@ -1,0 +1,21 @@
+<%= @flash_message if @flash_message %>
+<h2><%= @gameplan.title %></h2>
+<h4><i><%= @gameplan.category.name %></i></h4>
+<h4><%= GameplanHelper.total_time(@gameplan.steps) %></h4>
+<ol>
+<% @gameplan.steps.each do |step| %>
+  <li><%= step.display_step %></li>
+<% end %>
+</ol>
+<form action="/gameplans/stars" method="post">
+  <input type="hidden" name="gameplan[:id]" value="<%= @gameplan.id %>">
+  <input type="hidden" name="user[:id]" value="<%= @current_user.id %>">
+  <input type="submit" value="Star Gameplan">
+</form>
+<% if @gameplan.user_id == @current_user.id %>
+  <form style="display:inline-block;margin-right: 16px" action="/gameplans/<%= @gameplan.id %>/delete" method="post">
+    <input type="hidden" id="hidden" name="_method" value="delete">
+    <input type="submit" value="Delete Gameplan">
+  </form>
+  <a style="font-size:14px;" href="/gameplans/<%= @gameplan.id %>/edit"><i>Edit Gameplan</i></a>
+<% end %>

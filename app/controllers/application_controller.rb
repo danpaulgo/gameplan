@@ -8,6 +8,8 @@ class ApplicationController < Sinatra::Base
   end
 
   get "/" do
+    @flash_message = session[:flash]
+    session[:flash] = nil
     @current_user = UserHelper.current_user(session)
     erb :home
   end
@@ -27,6 +29,7 @@ class ApplicationController < Sinatra::Base
     if @user
       if @user.authenticate(params[:user][:password])
         session[:id] = @user.id
+        session[:password] = params[:user][:password]
         redirect "/users/#{@user.username}"
       else
         @error = "Invalid password"

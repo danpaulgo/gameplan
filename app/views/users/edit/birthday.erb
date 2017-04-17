@@ -1,0 +1,21 @@
+<h3 style="margin-bottom: 8px">Edit Date of Birth</h3>
+<form action="/users/edit" method="post">
+  <input type="hidden" id="hidden" name="_method" value="patch">
+  <select id="user_birthday_month" name="user[birthday][month]">
+    <% UserHelper.months.each_with_index do |month, index| %>
+      <option value="<%= index+1 %>" <%= "selected" if UserHelper.birthday_to(@current_user.birthday.to_s, :month) == index+1 %>><%= month %></option>
+    <% end %>
+  </select>
+  <select id="user_birthday_day" name="user[birthday][day]">
+    <% (1..31).to_a.each_with_index do |day, index| %>
+      <option value="<%= day %>" <%= "selected" if UserHelper.birthday_to(@current_user.birthday.to_s, :day) == index+1 %>><%= day %></option>
+    <% end %>
+  </select>
+  <select id="user_birthday_year" name="user[birthday][year]">
+    <% (1900..Date.today.year).to_a.each_with_index do |year, index| %>%>
+      <option value="<%= year %>" <%= "selected" if UserHelper.birthday_to(@current_user.birthday.to_s, :year) == 1900+index %>><%= year %></option>
+    <% end %>
+  </select>
+  <br>
+  <input style="margin-top: 8px" type="submit" value="Update Birthday">
+</form>

@@ -1,0 +1,22 @@
+<h2>
+  <% if !!@search_term %>
+    Search Results for "<%= @search_term %>"
+  <% else %>
+    All Gameplans
+  <% end %>
+</h2>
+<ol>
+<% @gameplans.each do |gameplan| %>
+  <li><a href="/gameplans/<%= gameplan.id %>"><%= gameplan.title %></a></li>
+<% end %>
+</ol>
+<form action="/gameplans/search" method="get">
+  <input type="text" id="search_term" name="s" placeholder="Search Gameplans">
+  <select id="gameplan_category" name="c">
+    <option>Any Category</option>
+    <% Category.all.each do |cat| %>
+      <option value="<%= cat.id %>"><%= cat.name %></option>
+    <% end %>
+  </select>
+  <input type="submit" value="Search">
+</form>

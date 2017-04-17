@@ -6,27 +6,30 @@
   <% end %>
   </ul>
 <% end %>
-<h2>Create New Account</h2>
-<form action="/signup" method="post">
-  <input type="text" id="user_first_name" name="user[first_name]" placeholder="First Name" value="<%= @user.first_name if @user %>">
+<h2>Edit Profile</h2>
+<form action="/users/<%= @current_user.username %>" method="post">
+  <input type="text" id="user_first_name" name="user[first_name]" placeholder="First Name" value="<%= @current_user.first_name %>">
   <br>
-  <input type="text" id="user_last_name" name="user[last_name]" placeholder="Last Name" value="<%= @user.last_name if @user %>">
+  <input type="text" id="user_last_name" name="user[last_name]" placeholder="Last Name" value="<%= @current_user.last_name %>">
   <br>
-  <input type="text" id="user_username" name="user[username]" placeholder="Username" value="<%= @user.username if @user %>">
+  <input type="text" id="user_username" name="user[username]" placeholder="Username" value="<%= @currentuser.username if @user %>">
   <br>
   <label>Date of Birth:</label>
   <br>
   <select id="user_birthday_month" name="user[birthday][month]">
+    <option <%= "selected" if @birthday.nil? %>>Month</option>
     <% UserHelper.months.each_with_index do |month, index| %>
       <option value="<%= index+1 %>" <%= "selected" if UserHelper.birthday_to(@birthday, :month) == index+1 %>><%= month %></option>
     <% end %>
   </select>
   <select id="user_birthday_day" name="user[birthday][day]">
+    <option <%= "selected" if @birthday.nil? %>>Day</option>
     <% (1..31).to_a.each_with_index do |day, index| %>
       <option value="<%= day %>" <%= "selected" if UserHelper.birthday_to(@birthday, :day) == index+1 %>><%= day %></option>
     <% end %>
   </select>
   <select id="user_birthday_year" name="user[birthday][year]">
+    <option selected>Year</option>
     <% (1900..Date.today.year).to_a.each_with_index do |year, index| %>%>
       <option value="<%= year %>" <%= "selected" if UserHelper.birthday_to(@birthday, :year) == 1900+index %>><%= year %></option>
     <% end %>
@@ -36,6 +39,5 @@
   <br>
   <input type="password" id="user_password_confirmation" name="user[password_confirmation]" placeholder="Confirm Password">
   <br>
-  <input type="submit" value="Sign Up">
+  <input type="submit" value="Update">
 </form>
-<p>Already have an account? Login <a href="/login">here</a>.</p>

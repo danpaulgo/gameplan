@@ -17,13 +17,15 @@ class UsersController < ApplicationController
     @user = User.new
     @user.first_name = params[:user][:first_name]
     @user.last_name = params[:user][:last_name]
-    @birthday = "#{params[:user][:birthday][:day]}/#{params[:user][:birthday][:month]}/#{params[:user][:birthday][:year]}"
+    @birthday = "#{params[:user][:birthday][:year]}-#{params[:user][:birthday][:month]}-#{params[:user][:birthday][:day]}"
     @user.birthday = @birthday
     @user.username = params[:user][:username]
     @user.password = params[:user][:password]
     @user.password_confirmation = params[:user][:password_confirmation]
     if @user.save
-      "User Saved"
+      session[:id] = @user.id
+      session[:password] = params[:user][:password]
+      redirect "/"
     else
       @flash_messages = @user.errors.full_messages
       erb :'signup'
@@ -59,6 +61,8 @@ class UsersController < ApplicationController
 
   # validate logged in
   get "/users/:username" do
+    @flash_message = session[:flash]
+    session[:flash] = nil
     if UserHelper.logged_in?(session)
       @user = User.find_by(username: params[:username])
       @current_user = UserHelper.current_user(session)
@@ -71,29 +75,43 @@ class UsersController < ApplicationController
   # UPDATE
 
   # validate correct user
-  get "/users/:username/edit" do
+  get "/users/edit/:foo" do
     if UserHelper.logged_in?(session)
-      @user = User.find_by(username: params[:username])
       @current_user = UserHelper.current_user(session)
-      if @user == @current_user
-        erb :'/users/edit'
-      else
-        redirect "/users/#{current_user.username}/edit"
+      case params[:foo]
+      when "name"
+        erb :'/users/edit/name'
+      when "birthday"
+        erb :'/users/edit/birthday'
+      when "username"
+        erb :'/users/edit/username'
       end
     else
       redirect "/login"
     end
   end
 
-  patch "/users/:username" do
-
+  patch "/users/edit" do
+    @current_user = UserHelper.current_user(session)
+    params[:user][:password] = session[:password]
+    if params[:user][:birthday]
+      @birthday = "#{params[:user][:birthday][:year]}-#{params[:user][:birthday][:month]}-#{params[:user][:birthday][:day]}"
+      params[:user][:birthday] = @birthday
+    end
+    @current_user.update(params[:user])
+    # binding.pry
+    session[:flash] = "Profile successfully updated"
+    redirect "/users/#{@current_user.username}"
   end
 
   # DELETE
 
-  delete "/users/:username/delete" do
-    User.find_by(username: params[:username]).delete
-    erb :'/users/delete'
+  delete "/users/delete" do
+    UserHelper.current_user(session).delete
+    session[:flash] = "Profile successfully deleted"
+    session[:id] = nil
+    session[:password] = nil
+    redirect "/"
   end
 
 end

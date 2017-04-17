@@ -1,18 +1,59 @@
-<h2><%= @user == @current_user ? "My" : "#{@user.username}'s" %> Profile</h2>
-<h4>Name: <%= "#{@user.first_name} #{@user.last_name}" %></h4>
-<h4>Age: <%= ((Date.today-@user.birthday)/365).to_i %></h4>
+<% my_profile =  UserHelper.my_profile?(@user, @current_user)%>
+<%= @flash_message %>
+<h2><%= my_profile ? "My" : "#{@user.username}'s" %> Profile</h2>
+<table>
+  <tr>
+    <td style="padding-bottom:5px"><p style="font-size: 16"><b>Name: <%= @user.full_name %></b></p></td>
+    <% if my_profile %>
+      <td style="padding-bottom:5px"><p style="font-size: 12"><%= "&nbsp;"*5 %>(<a href="/users/edit/name"><i>Edit</i></a>)</p></td>
+    <% end %>
+  </tr>
+  <tr>
+    <td style="padding-bottom:5px"><p style="font-size: 16"><b>Age: <%= ((Date.today-@user.birthday)/365).to_i %></b></p></td>
+    <% if my_profile %>
+       <td style="padding-bottom:5px"><p style="font-size: 12"><%= "&nbsp;"*5 %>(<a href="/users/edit/birthday"><i>Edit</i></a>)</p>
+    <% end %></td>
+  </tr>
+  <% if my_profile %>
+    <tr>
+      <td><p style="font-size: 16"><b>Username: <%= @user.username %></b></p></td>
+      <td><p style="font-size: 12"><%= "&nbsp;"*5 %>(<a href="/users/edit/username"><i>Edit</i></a>)</p></td>
+    </tr>
+  <% end %>
+</table>
+
 <h3>Gameplans</h3>
-<ol>
+<table>
 <% @user.gameplans.each do |gameplan| %>
-  <li><a href="/gameplans/<%= gameplan.id %>"><%= gameplan.title %></a></li>
+  <tr>
+    <td><a href="/gameplans/<%= gameplan.id %>"><%= gameplan.title %></a></td>
+    <% if my_profile %>
+      <td style="font-size: 12; padding-left: 10px;">(<a href="/gameplans/<%= gameplan.id %>/edit"><i>Edit</i></a>)</td>
+      <td style="font-size: 12">(<a href="/gameplans/<%= gameplan.id %>/delete"><i>Delete</i></a>)</td>
+    <% end %>
+  </tr>
 <% end %>
-</ol>
+</table>
+<% if my_profile %>
+  <p style="font-size: 12">&nbsp;<a href="/gameplans/new">Create New Gameplan</a></p>
+<% end %>
+
 <h3>Starred Gameplans</h3>
-<ol>
-<% @user.starred_gameplans.uniq.each do |gameplan| %>
-  <li><a href="/gameplans/<%= gameplan.id %>"><%= gameplan.title %></a></li>
+<table>
+<% @user.starred_gameplans.each do |gameplan| %>
+  <tr>
+    <td><a href="/gameplans/<%= gameplan.id %>"><%= gameplan.title %></a></td>
+    <% if my_profile %>
+      <td style="font-size: 12; padding: 0px 10px;">(<a href="/gameplans/<%= gameplan.id %>/remove"><i>Remove</i></a>)</td>
+    <% end %>
+  </tr>
 <% end %>
-</ol>
-<br>
-<p style="font-size: 14"></p>
-<p style="font-size: 14"><i><a href="/users">Browse Users</a> | <a href="">Browse Gameplans</a> | <a href="/">Return Home</a></i></p>
+</table>
+
+<p style="font-size: 14; margin-top: 48px"><i><a href="/users">Browse Users</a> | <a href="/gameplans">Browse Gameplans</a> | <a href="/">Return Home</a></i></p>
+<% if my_profile %>
+  <form style="margin-top: 36px" action="/users/delete" method="post">
+    <input type="hidden" id="hidden" name="_method" value="delete">
+    <input type="submit" value="Delete Profile">
+  </form
+<% end %>
