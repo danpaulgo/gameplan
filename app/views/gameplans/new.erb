@@ -7,23 +7,23 @@
   </ul>
 <% end %>
 <h2>Create Gameplan</h2>
-<form action="/gameplans" method="post">
-  <input style="margin-bottom:12px" type="text" id="gameplan_title" name="gameplan[title]" placeholder="Enter Title">
-  <select name=gameplan[category_id]>
+<form action="/gameplans/new" method="post">
+  <input style="margin-bottom:12px" type="text" id="gameplan_title" name="gameplan[title]" placeholder="Enter Title" value="<%= @gameplan_title if @gameplan_title %>">
+  <select name="gameplan[category_id]">
     <option value="new">Add New Category</option>
     <% Category.all.each do |cat| %>
-      <option value="<%= cat.id %>"><%= cat.name %></option>
+      <option value="<%= cat.id %>" <%= "selected" if @gameplan && @gameplan.category && cat.id == @gameplan.category.id %>><%= cat.name %></option>
     <% end %>
   </select>
-  <input type="text" id="category_name" name="category[name]" placeholder="New Category Name">
+  <input type="text" id="category_name" name="category[name]" placeholder="New Category Name" value="<%= @category_name if @category_name %>">
   <br>
    <% 10.times do |n| %>
-    <input style="width:42px" type="number" name="steps[][time_length]" value="0">
+    <input style="width:42px" type="number" name="steps[][time_length]"  value="<%= !!@steps ? @steps[n][:time_length] : 0 %>">
     <select name="steps[][time_measure]">
-      <option value="min">min</option>
-      <option value="hour">hour</option>
+      <option value="min" >min</option>
+      <option value="hour" <%= "selected" if @steps && StepHelper.hour?(@steps[n]) %>>hour</option>
     </select>
-    <input type="text" name="steps[][step_name]"" placeholder="Step <%= n+1 %>">
+    <input type="text" name="steps[][step_name]"" placeholder="Step <%= n+1 %>" value="<%= @steps[n][:step_name] if @steps %>">
     <br>
   <% end %>
   <input style="margin-top: 12px" type="submit" value="Create">

@@ -11,6 +11,6 @@
 <% end %>
 </ol>
 <form action="/users/search" method="get">
-  <input type="text" id="search_term" name="s" placeholder="Search Users">
+  <input type="text" id="search_term" name="s" placeholder="Search Users" value="<%= @search_term if @search_term %>">
   <input type="submit" value="Search">
 </form>

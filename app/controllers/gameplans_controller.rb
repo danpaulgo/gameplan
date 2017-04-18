@@ -14,41 +14,49 @@ class GameplansController < ApplicationController
     end
   end
 
-  post "/gameplans" do
+  post "/gameplans/new" do
     session[:flash] = []
     @gameplan = Gameplan.new
     @gameplan.user = UserHelper.current_user(session)
-    @gameplan.title = params[:gameplan][:title]
-    cat_or_error = GameplanHelper.set_category_or_error(params[:gameplan][:category_id], params[:category][:name].capitalize)
+    @gameplan_title = params[:gameplan][:title]
+    @gameplan.title = @gameplan_title.capitalize
+    @category_name = params[:category][:name]
+    cat_or_error = GameplanHelper.set_category_or_error(params[:gameplan][:category_id], @category_name.capitalize)
     if cat_or_error.is_a?(Category)
       @gameplan.category = cat_or_error
     else
       session[:flash] += cat_or_error
-      redirect "/gameplans/new"
+      # redirect "/gameplans/new"
     end
     GameplanHelper.add_steps(@gameplan, params[:steps], session)
     if !session[:flash].empty?
       Step.all.each{|s| s.delete if s.gameplan == @gameplan }
-      redirect "/gameplans/new"
+      # redirect "/gameplans/new"
     end
-    if @gameplan.steps.empty?
+    if @gameplan.steps.empty? && !session[:flash].include?("Please enter valid name and time length for each step")
       session[:flash] += ["Gameplan must have at least one step"]
-      redirect "/gameplans/new"
+      # redirect "/gameplans/new"
     end
-    if @gameplan.save
-      session[:flash] = nil
-      redirect "/gameplans/#{@gameplan.id}"
+    if session[:flash].empty?
+      if @gameplan.save
+        session[:flash] = nil
+        redirect "/gameplans/#{@gameplan.id}"
+      end
     else
       session[:flash] += @gameplan.errors.full_messages
+      @steps = params[:steps]
       Step.all.each{|s| s.delete if s.gameplan == @gameplan }
-      redirect "/gameplans/new"
+      @flash_messages = session[:flash]
+      session[:flash] = nil
+      erb :'/gameplans/new'
+      # redirect "/gameplans/new"
     end
   end
 
   post "/gameplans/stars" do
-
+    Star.create(user_id: params[:user][:id], gameplan_id: params[:gameplan][:id])
     session[:flash] = "Gameplan starred"
-
+    redirect "/gameplans/#{params[:gameplan][:id]}"
   end
 
   
@@ -98,6 +106,7 @@ class GameplansController < ApplicationController
       session[:flash] = nil
       @current_user = UserHelper.current_user(session)
       @gameplan = Gameplan.find(params[:id])
+      @starred = !!Star.find_by(user_id: @current_user.id, gameplan_id: @gameplan.id)
       # binding.pry
       erb :'/gameplans/show'
     else
@@ -120,6 +129,12 @@ class GameplansController < ApplicationController
 
   # DELETE
 
+  delete "/gameplans/stars/delete" do
+    Star.find_by(user_id: params[:user][:id], gameplan_id: params[:gameplan][:id]).delete
+    session[:flash] = "Star removed from gameplan"
+    redirect "/gameplans/#{params[:gameplan][:id]}"
+  end
+
   delete "/gameplans/:id/delete" do
     @current_user = UserHelper.current_user(session)
     @gameplan = Gameplan.find(params[:id])
@@ -131,5 +146,7 @@ class GameplansController < ApplicationController
     session[:flash] = "Gameplan successfully deleted"
     redirect "/users/#{@current_user.username}"
   end
+
+  
 
 end

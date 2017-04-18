@@ -7,11 +7,15 @@
   <li><%= step.display_step %></li>
 <% end %>
 </ol>
-<form action="/gameplans/stars" method="post">
-  <input type="hidden" name="gameplan[:id]" value="<%= @gameplan.id %>">
-  <input type="hidden" name="user[:id]" value="<%= @current_user.id %>">
-  <input type="submit" value="Star Gameplan">
+<form action="/gameplans/stars<%= '/delete' if @starred %>" method="post">
+  <% if @starred %>
+    <input type="hidden" id="hidden" name="_method" value="delete">
+  <% end %>
+  <input type="hidden" name="gameplan[id]" value="<%= @gameplan.id %>">
+  <input type="hidden" name="user[id]" value="<%= @current_user.id %>">
+  <input type="submit" value="<%= @starred ? 'Unstar' : 'Star' %> Gameplan">
 </form>
+
 <% if @gameplan.user_id == @current_user.id %>
   <form style="display:inline-block;margin-right: 16px" action="/gameplans/<%= @gameplan.id %>/delete" method="post">
     <input type="hidden" id="hidden" name="_method" value="delete">

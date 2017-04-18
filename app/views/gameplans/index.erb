@@ -11,11 +11,11 @@
 <% end %>
 </ol>
 <form action="/gameplans/search" method="get">
-  <input type="text" id="search_term" name="s" placeholder="Search Gameplans">
+  <input type="text" id="search_term" name="s" placeholder="Search Gameplans" value="<%= @search_term if @search_term %>">
   <select id="gameplan_category" name="c">
     <option>Any Category</option>
     <% Category.all.each do |cat| %>
-      <option value="<%= cat.id %>"><%= cat.name %></option>
+      <option value="<%= cat.id %>" <%= "selected" if @category_id == cat.id %>><%= cat.name %></option>
     <% end %>
   </select>
   <input type="submit" value="Search">
