@@ -8,6 +8,7 @@
 <% end %>
 <h2>Edit Gameplan</h2>
 <form action="/gameplans/<%= @gameplan.id %>" method="post">
+  <input type="hidden" id="hidden" name="_method" value="patch">
   <input style="margin-bottom:12px" type="text" id="gameplan_title" name="gameplan[title]" placeholder="Enter Title" value="<%= @gameplan.title %>">
   <select name="gameplan[category_id]">
     <option value="new">Add New Category</option>

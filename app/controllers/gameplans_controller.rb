@@ -26,16 +26,14 @@ class GameplansController < ApplicationController
       @gameplan.category = cat_or_error
     else
       session[:flash] += cat_or_error
-      # redirect "/gameplans/new"
     end
-    GameplanHelper.add_steps(@gameplan, params[:steps], session)
-    if !session[:flash].empty?
-      Step.all.each{|s| s.delete if s.gameplan == @gameplan }
-      # redirect "/gameplans/new"
+    if GameplanHelper.all_steps_valid?(params[:steps])
+      GameplanHelper.add_steps(@gameplan, params[:steps], session)
+    else
+      session[:flash] += ["Please enter valid name and time length for each step"]
     end
     if @gameplan.steps.empty? && !session[:flash].include?("Please enter valid name and time length for each step")
       session[:flash] += ["Gameplan must have at least one step"]
-      # redirect "/gameplans/new"
     end
     if session[:flash].empty?
       if @gameplan.save
@@ -49,7 +47,6 @@ class GameplansController < ApplicationController
       @flash_messages = session[:flash]
       session[:flash] = nil
       erb :'/gameplans/new'
-      # redirect "/gameplans/new"
     end
   end
 
@@ -89,7 +86,6 @@ class GameplansController < ApplicationController
         else
           @gameplans = @gameplans_from_search
         end
-        # binding.pry
         erb :'/gameplans/index'
       else
         redirect "/gameplans"
@@ -107,7 +103,6 @@ class GameplansController < ApplicationController
         session[:flash] = nil
         @current_user = UserHelper.current_user(session)
         @starred = !!Star.find_by(user_id: @current_user.id, gameplan_id: @gameplan.id)
-        # binding.pry
         erb :'/gameplans/show'
       else
         redirect "/gameplans"
@@ -141,8 +136,9 @@ class GameplansController < ApplicationController
   end
 
   patch "/gameplans/:id" do
+    session[:flash] = []
     @gameplan = Gameplan.find(params[:id])
-    @gameplan.steps.each{|step| step.delete}
+    
     # @category = @gameplan.category
     # @steps = @gameplan.steps
     @new_steps = params[:steps]
@@ -152,7 +148,12 @@ class GameplansController < ApplicationController
     else
       session[:flash] += cat_or_error
     end
-    GameplanHelper.add_steps(@gameplan, params[:steps], session)
+    if GameplanHelper.all_steps_valid?(params[:steps])
+      @gameplan.steps.each{|step| step.delete}
+      GameplanHelper.add_steps(@gameplan, params[:steps], session)
+    else
+      session[:flash] += ["Please enter valid name and time length for each step"]
+    end
     if !session[:flash].empty?
       Step.all.each{|s| s.delete if s.gameplan == @gameplan }
     end
