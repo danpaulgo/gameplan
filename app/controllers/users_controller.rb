@@ -15,8 +15,8 @@ class UsersController < ApplicationController
 
   post "/signup" do
     @user = User.new
-    @user.first_name = params[:user][:first_name]
-    @user.last_name = params[:user][:last_name]
+    @user.first_name = params[:user][:first_name].capitalize
+    @user.last_name = params[:user][:last_name].capitalize
     @birthday = "#{params[:user][:birthday][:year]}-#{params[:user][:birthday][:month]}-#{params[:user][:birthday][:day]}"
     @user.birthday = @birthday
     @user.username = params[:user][:username]

@@ -120,7 +120,17 @@ class GameplansController < ApplicationController
 
   # validate correct user
   get "/gameplans/:id/edit" do
-
+    if UserHelper.logged_in(session)
+      @current_user = UserHelper.current_user(session)
+      @gameplan = Gameplan.find(params[:id])
+      if @gameplan.user == @current_user
+        erb :'/gameplans/edit'
+      else
+        redirect "/gameplans"
+      end
+    else
+      redirect "/login"
+    end
   end
 
   patch "/gameplans/:id" do
