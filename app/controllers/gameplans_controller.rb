@@ -141,8 +141,53 @@ class GameplansController < ApplicationController
   end
 
   patch "/gameplans/:id" do
+    @gameplan = Gameplan.find(params[:id])
+    @category = @gameplan.category
+    @steps = @gameplan.steps
+    @new_steps = params[:steps]
+    cat_or_error = GameplanHelper.set_category_or_error(params[:gameplan][:category_id], params[:category][:name].capitalize)
+    if cat_or_error.is_a?(Category)
+      @gameplan.category = cat_or_error
+    else
+      session[:flash] += cat_or_error
+    end
 
   end
+
+  # post "/gameplans/new" do
+  #   session[:flash] = []
+  #   @gameplan = Gameplan.new
+  #   @gameplan.user = UserHelper.current_user(session)
+  #   @gameplan_title = params[:gameplan][:title]
+  #   @gameplan.title = @gameplan_title.capitalize
+  #   @category_name = params[:category][:name]
+  #   cat_or_error = GameplanHelper.set_category_or_error(params[:gameplan][:category_id], @category_name.capitalize)
+  #   if cat_or_error.is_a?(Category)
+  #     @gameplan.category = cat_or_error
+  #   else
+  #     session[:flash] += cat_or_error
+  #   end
+  #   GameplanHelper.add_steps(@gameplan, params[:steps], session)
+  #   if !session[:flash].empty?
+  #     Step.all.each{|s| s.delete if s.gameplan == @gameplan }
+  #   end
+  #   if @gameplan.steps.empty? && !session[:flash].include?("Please enter valid name and time length for each step")
+  #     session[:flash] += ["Gameplan must have at least one step"]
+  #   end
+  #   if session[:flash].empty?
+  #     if @gameplan.save
+  #       session[:flash] = nil
+  #       redirect "/gameplans/#{@gameplan.id}"
+  #     end
+  #   else
+  #     session[:flash] += @gameplan.errors.full_messages
+  #     @steps = params[:steps]
+  #     Step.all.each{|s| s.delete if s.gameplan == @gameplan }
+  #     @flash_messages = session[:flash]
+  #     session[:flash] = nil
+  #     erb :'/gameplans/new'
+  #   end
+  # end
 
   # DELETE
 
