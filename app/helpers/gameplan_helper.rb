@@ -52,18 +52,13 @@ class GameplanHelper
     end
   end
 
-  def self.add_steps(gameplan, steps, session)
+  def self.add_steps(gameplan, steps)
     steps.each do |step_hash|
-      if !step_hash[:step_name].empty? && step_hash[:time_length].to_i > 0
-        step = Step.new
-        step.time_length = step_hash[:time_length].to_i
-        step.time_measure = step_hash[:time_measure]
-        step.step_name = step_hash[:step_name]
-        gameplan.steps << step
-      elsif !step_hash[:step_name].empty? || step_hash[:time_length].to_i > 0
-        session[:flash] += ["Please enter valid name and time length for each step"]
-        break
-      end
+      step = Step.new
+      step.time_length = step_hash[:time_length].to_i
+      step.time_measure = step_hash[:time_measure]
+      step.step_name = step_hash[:step_name]
+      gameplan.steps << step
     end
   end
 
