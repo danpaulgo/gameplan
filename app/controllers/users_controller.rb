@@ -64,9 +64,12 @@ class UsersController < ApplicationController
     @flash_message = session[:flash]
     session[:flash] = nil
     if UserHelper.logged_in?(session)
-      @user = User.find_by(username: params[:username])
-      @current_user = UserHelper.current_user(session)
-      erb :'/users/show'
+      if @user = User.all.detect{|u| u.username == params[:username]}
+        @current_user = UserHelper.current_user(session)
+        erb :'/users/show'
+      else
+        redirect "/users"
+      end
     else
       redirect "/login"
     end
@@ -85,6 +88,8 @@ class UsersController < ApplicationController
         erb :'/users/edit/birthday'
       when "username"
         erb :'/users/edit/username'
+      else
+        redirect "/users/#{@current_user.username}"
       end
     else
       redirect "/login"

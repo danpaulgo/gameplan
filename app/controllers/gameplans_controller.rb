@@ -102,13 +102,16 @@ class GameplansController < ApplicationController
   # validate logged in
   get "/gameplans/:id" do
     if UserHelper.logged_in?(session)
-      @flash_message = session[:flash]
-      session[:flash] = nil
-      @current_user = UserHelper.current_user(session)
-      @gameplan = Gameplan.find(params[:id])
-      @starred = !!Star.find_by(user_id: @current_user.id, gameplan_id: @gameplan.id)
-      # binding.pry
-      erb :'/gameplans/show'
+      if @gameplan = Gameplan.all.detect{|gp| gp.id == params[:id].to_i}
+        @flash_message = session[:flash]
+        session[:flash] = nil
+        @current_user = UserHelper.current_user(session)
+        @starred = !!Star.find_by(user_id: @current_user.id, gameplan_id: @gameplan.id)
+        # binding.pry
+        erb :'/gameplans/show'
+      else
+        redirect "/gameplans"
+      end
     else
       redirect "/login"
     end
@@ -120,11 +123,15 @@ class GameplansController < ApplicationController
 
   # validate correct user
   get "/gameplans/:id/edit" do
-    if UserHelper.logged_in(session)
+    if UserHelper.logged_in?(session)
       @current_user = UserHelper.current_user(session)
-      @gameplan = Gameplan.find(params[:id])
-      if @gameplan.user == @current_user
-        erb :'/gameplans/edit'
+      if @gameplan = Gameplan.all.detect{|gp| gp.id == params[:id].to_i}
+        if @gameplan.user == @current_user
+          @steps = @gameplan.steps
+          erb :'/gameplans/edit'
+        else
+          redirect "/gameplans"
+        end
       else
         redirect "/gameplans"
       end
