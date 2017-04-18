@@ -142,8 +142,9 @@ class GameplansController < ApplicationController
 
   patch "/gameplans/:id" do
     @gameplan = Gameplan.find(params[:id])
-    @category = @gameplan.category
-    @steps = @gameplan.steps
+    @gameplan.steps.each{|step| step.delete}
+    # @category = @gameplan.category
+    # @steps = @gameplan.steps
     @new_steps = params[:steps]
     cat_or_error = GameplanHelper.set_category_or_error(params[:gameplan][:category_id], params[:category][:name].capitalize)
     if cat_or_error.is_a?(Category)
@@ -151,7 +152,26 @@ class GameplansController < ApplicationController
     else
       session[:flash] += cat_or_error
     end
-
+    GameplanHelper.add_steps(@gameplan, params[:steps], session)
+    if !session[:flash].empty?
+      Step.all.each{|s| s.delete if s.gameplan == @gameplan }
+    end
+    if @gameplan.steps.empty? && !session[:flash].include?("Please enter valid name and time length for each step")
+      session[:flash] += ["Gameplan must have at least one step"]
+    end
+    if session[:flash].empty?
+      if @gameplan.save
+        session[:flash] = ["Gameplan successfully updated"]
+        redirect "/gameplans/#{@gameplan.id}"
+      end
+    else
+      session[:flash] += @gameplan.errors.full_messages
+      @steps = params[:steps]
+      Step.all.each{|s| s.delete if s.gameplan == @gameplan }
+      @flash_messages = session[:flash]
+      session[:flash] = nil
+      erb :'/gameplans/edit'
+    end
   end
 
   # post "/gameplans/new" do
