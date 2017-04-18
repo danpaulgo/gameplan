@@ -28,7 +28,7 @@ class GameplansController < ApplicationController
       session[:flash] += cat_or_error
     end
     if GameplanHelper.all_steps_valid?(params[:steps])
-      GameplanHelper.add_steps(@gameplan, params[:steps], session)
+      GameplanHelper.add_steps(@gameplan, params[:steps])
     else
       session[:flash] += ["Please enter valid name and time length for each step"]
     end
@@ -150,7 +150,7 @@ class GameplansController < ApplicationController
     end
     if GameplanHelper.all_steps_valid?(params[:steps])
       @gameplan.steps.each{|step| step.delete}
-      GameplanHelper.add_steps(@gameplan, params[:steps], session)
+      GameplanHelper.add_steps(@gameplan, params[:steps])
     else
       session[:flash] += ["Please enter valid name and time length for each step"]
     end
