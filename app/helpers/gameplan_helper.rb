@@ -67,4 +67,10 @@ class GameplanHelper
     end
   end
 
+  def self.all_steps_valid?(steps)
+    steps.all? do |step_hash|
+      ((step_hash[:time_length] > 0) && (!step_hash[:step_name].empty?)) || ((step[:time_length.to_i == 0) && step_hash[:step_name].empty?))
+    end
+  end
+
 end
