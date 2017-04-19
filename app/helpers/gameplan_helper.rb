@@ -58,7 +58,7 @@ class GameplanHelper
         step = Step.new
         step.time_length = step_hash[:time_length].to_i
         step.time_measure = step_hash[:time_measure]
-        step.step_name = step_hash[:step_name]
+        step.step_name = step_hash[:step_name].capitalize
         step.save
         gameplan.steps << step
       end
@@ -68,6 +68,12 @@ class GameplanHelper
   def self.all_steps_valid?(steps)
     steps.all? do |step_hash|
       ((step_hash[:time_length].to_i > 0) && (!step_hash[:step_name].empty?)) || ((step_hash[:time_length].to_i == 0) && (step_hash[:step_name].empty?))
+    end
+  end
+
+  def self.delete_empty_categories
+    Category.all.each do |cat|
+      cat.delete if cat.gameplans.empty?
     end
   end
 
