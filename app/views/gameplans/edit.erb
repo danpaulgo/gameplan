@@ -7,7 +7,7 @@
   </ul>
 <% end %>
 <h2>Edit Gameplan</h2>
-<form action="/gameplans/<%= @gameplan.id %>" method="post">
+<form action="/gameplans/<%= @gameplan.id %>/edit" method="post">
   <input type="hidden" id="hidden" name="_method" value="patch">
   <input style="margin-bottom:12px" type="text" id="gameplan_title" name="gameplan[title]" placeholder="Enter Title" value="<%= @gameplan.title %>">
   <select name="gameplan[category_id]">
@@ -16,7 +16,7 @@
       <option value="<%= cat.id %>" <%= "selected" if cat.id == @gameplan.category.id %>><%= cat.name %></option>
     <% end %>
   </select>
-  <input type="text" id="category_name" name="category[name]" placeholder="New Category Name">
+  <input type="text" id="category_name" name="category[name]" placeholder="New Category Name" value="<%= @new_category if @new_category%>">
   <br>
    <% 10.times do |n| %>
     <input style="width:42px" type="number" name="steps[][time_length]"  value="<%= @steps[n] ? @steps[n][:time_length] : 0 %>">
