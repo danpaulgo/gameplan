@@ -112,7 +112,15 @@ class UsersController < ApplicationController
   # DELETE
 
   delete "/users/delete" do
-    UserHelper.current_user(session).delete
+    @current_user = UserHelper.current_user(session)
+    @current_user.gameplans.each do |gp|
+      gp.steps.each do |step|
+        step.delete
+      end
+      gp.delete
+    end
+    GameplanHelper.delete_empty_categories
+    @current_user.delete
     session[:flash] = "Profile successfully deleted"
     session[:id] = nil
     session[:password] = nil

@@ -1,5 +1,5 @@
 <%= @flash_message if @flash_message %>
-<h2><%= @gameplan.title %></h2>
+<h2><%= @gameplan.title %> by <%= @gameplan.user.username %></h2>
 <h4><i><%= @gameplan.category.name %></i></h4>
 <h4><%= GameplanHelper.total_time(@gameplan.steps) %></h4>
 <ol>
